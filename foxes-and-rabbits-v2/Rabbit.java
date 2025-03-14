@@ -22,11 +22,6 @@ public class Rabbit extends Animal
     private static final int MAX_LITTER_SIZE = 4;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
-    
-    // Individual characteristics (instance fields).
-    
-    // The rabbit's age.
-    private int age;
 
     /**
      * Create a new rabbit. A rabbit may be created with age
@@ -39,9 +34,8 @@ public class Rabbit extends Animal
     public Rabbit(boolean randomAge, Field field, Location location)
     {
         super(field, location);
-        age = 0;
         if(randomAge) {
-            age = rand.nextInt(MAX_AGE);
+            setAge(rand.nextInt(MAX_AGE));
         }
     }
     
@@ -68,18 +62,6 @@ public class Rabbit extends Animal
     }
 
     /**
-     * Increase the age.
-     * This could result in the rabbit's death.
-     */
-    private void incrementAge()
-    {
-        age++;
-        if(age > MAX_AGE) {
-            setDead();
-        }
-    }
-    
-    /**
      * Check whether or not this rabbit is to give birth at this step.
      * New births will be made into free adjacent locations.
      * @param newRabbits A list to return newly born rabbits.
@@ -99,25 +81,38 @@ public class Rabbit extends Animal
     }
         
     /**
-     * Generate a number representing the number of births,
-     * if it can breed.
-     * @return The number of births (may be zero).
-     */
-    private int breed()
+    * Return the breeding age of this animal . 
+    * @return The breeding age of this animal. 
+    */ 
+    protected int getBreedingAge()
     {
-        int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-        }
-        return births;
+        return BREEDING_AGE;
     }
 
     /**
-     * A rabbit can breed if it has reached the breeding age.
-     * @return true if the rabbit can breed, false otherwise.
+     * Returns the max age of this animal
+     * @return The max age of this animal
      */
-    private boolean canBreed()
+    protected int getMaxAge() 
     {
-        return age >= BREEDING_AGE;
+        return MAX_AGE;
+    }
+
+    /**
+     * Returns the animal's breeding probability
+     * @return The animal's breeding probability
+     */
+    protected double getBreedingProbability()
+    {
+        return BREEDING_PROBABILITY;
+    }
+
+    /**
+     * Return the animal's max litter size
+     * @return The animal's max litter size
+     */
+    protected int getMaxLitterSize()
+    {
+        return MAX_LITTER_SIZE;
     }
 }
