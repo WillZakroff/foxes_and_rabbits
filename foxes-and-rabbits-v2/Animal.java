@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.Random;
+import java.awt.Color;
 
 /**
  * A class representing shared characteristics of animals.
@@ -19,6 +20,11 @@ public abstract class Animal
     private int age;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
+    // The probability that an animal will be created in any given grid position.
+    private static final double CREATION_PROBABILITY = 0;
+    // The animal's simulator color
+    private static final Color color = Color.BLACK;
+    
 
     /**
      * Create a new animal at location in field.
@@ -32,6 +38,11 @@ public abstract class Animal
         this.field = field;
         this.age = 0;
         setLocation(location);
+    }
+
+    public Animal(){
+        alive = true;
+        this.age = 0;
     }
     
     /**
@@ -171,4 +182,40 @@ public abstract class Animal
      * @return The animal's max litter size
      */
     abstract protected int getMaxLitterSize();
+
+    protected void giveBirth(List<Animal> newAnimals, Class<? extends Animal> animalClass){
+        Field field = getField();
+        List<Location> freePlace = field.getFreeAdjacentLocations(getLocation());
+        int births = breed();
+        for(int b = 0; b < births && freePlace.size() > 0; b++){
+            Location loc = freePlace.remove(0);
+            Animal young = null;
+            try {
+                young = (Animal) animalClass.getConstructor(Field.class, Location.class).newInstance(field, loc);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (young != null) {
+                newAnimals.add(young);
+            }
+        }
+    }
+
+    protected double getCreationProbability(){
+        return CREATION_PROBABILITY;
+    }
+
+    protected Color getColor(){
+        return color;
+    }
+
+    protected void setField(Field field){
+        this.field = field;
+    }
+
+    protected Random getRandomNum(){
+        return rand;
+    }
+
+    
 }

@@ -1,6 +1,7 @@
 import java.util.List;
 import java.util.Iterator;
 import java.util.Random;
+import java.awt.Color;
 
 /**
  * A simple model of a fox.
@@ -19,6 +20,10 @@ public class Fox extends Animal
     private static final int MAX_AGE = 150;
     // The likelihood of a fox breeding.
     private static final double BREEDING_PROBABILITY = 0.08;
+    // The creation probability
+    private static final double CREATION_PROBABILITY = 0.02;
+    // The color of the fox
+    private static final Color COLOR = Color.ORANGE;
     // The maximum number of births.
     private static final int MAX_LITTER_SIZE = 2;
     // The food value of a single rabbit. In effect, this is the
@@ -50,6 +55,10 @@ public class Fox extends Animal
             setAge(0);
             foodLevel = RABBIT_FOOD_VALUE;
         }
+    }
+
+    public Fox(){
+        super();
     }
     
     /**
@@ -171,4 +180,14 @@ public class Fox extends Animal
     {
         return MAX_LITTER_SIZE;
     }
+
+    protected double getCreationProbability(){
+        return CREATION_PROBABILITY;
+    }
+
+    protected Color getColor(){
+        return COLOR;
+    }
+
+    
 }

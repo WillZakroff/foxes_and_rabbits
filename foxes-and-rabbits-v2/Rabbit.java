@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.Random;
+import java.awt.Color;
 
 /**
  * A simple model of a rabbit.
@@ -18,6 +19,10 @@ public class Rabbit extends Animal
     private static final int MAX_AGE = 40;
     // The likelihood of a rabbit breeding.
     private static final double BREEDING_PROBABILITY = 0.12;
+    // The creation probability
+    private static final double CREATION_PROBABILITY = 0.08;
+    // The color of the rabbit
+    private static final Color COLOR = Color.BLUE;
     // The maximum number of births.
     private static final int MAX_LITTER_SIZE = 4;
     // A shared random number generator to control breeding.
@@ -37,6 +42,10 @@ public class Rabbit extends Animal
         if(randomAge) {
             setAge(rand.nextInt(MAX_AGE));
         }
+    }
+
+    public Rabbit(){
+        super();
     }
     
     /**
@@ -114,5 +123,13 @@ public class Rabbit extends Animal
     protected int getMaxLitterSize()
     {
         return MAX_LITTER_SIZE;
+    }
+
+    protected double getCreationProbability(){
+        return CREATION_PROBABILITY;
+    }
+
+    protected Color getColor(){
+        return COLOR;
     }
 }

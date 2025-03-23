@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.awt.Color;
+import java.lang.reflect.Constructor;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -18,10 +19,6 @@ public class Simulator
     private static final int DEFAULT_WIDTH = 120;
     // The default depth of the grid.
     private static final int DEFAULT_DEPTH = 80;
-    // The probability that a fox will be created in any given grid position.
-    private static final double FOX_CREATION_PROBABILITY = 0.02;
-    // The probability that a rabbit will be created in any given grid position.
-    private static final double RABBIT_CREATION_PROBABILITY = 0.08;    
 
     // List of animals in the field.
     private List<Animal> animals;
@@ -31,16 +28,19 @@ public class Simulator
     private int step;
     // A graphical view of the simulation.
     private SimulatorView view;
+   
     
-    /**
-     * Construct a simulation field with default size.
-     */
-    public Simulator()
-    {
-        this(DEFAULT_DEPTH, DEFAULT_WIDTH);
-    }
+        
+        /**
+         * Construct a simulation field with default size.
+         */
+        public Simulator()
+        {
+            this(DEFAULT_DEPTH, DEFAULT_WIDTH);
+        }
+        
     
-    /**
+        /**
      * Create a simulation field with the given size.
      * @param depth Depth of the field. Must be greater than zero.
      * @param width Width of the field. Must be greater than zero.
@@ -59,8 +59,6 @@ public class Simulator
 
         // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width);
-        view.setColor(Rabbit.class, Color.ORANGE);
-        view.setColor(Fox.class, Color.BLUE);
         
         // Setup a valid starting point.
         reset();
@@ -84,7 +82,7 @@ public class Simulator
     {
         for(int step = 1; step <= numSteps && view.isViable(field); step++) {
             simulateOneStep();
-            // delay(60);   // uncomment this to run more slowly
+            //delay(60);   // uncomment this to run more slowly
         }
     }
     
@@ -127,28 +125,33 @@ public class Simulator
         view.showStatus(step, field);
     }
     
-    /**
-     * Randomly populate the field with foxes and rabbits.
-     */
-    private void populate()
-    {
+    private void populate() {
         Random rand = Randomizer.getRandom();
         field.clear();
-        for(int row = 0; row < field.getDepth(); row++) {
-            for(int col = 0; col < field.getWidth(); col++) {
-                if(rand.nextDouble() <= FOX_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Fox fox = new Fox(true, field, location);
-                    animals.add(fox);
+    
+        for (Class<? extends Animal> animalClass : SimulationDriver.animalClasses) {
+            try {
+                // Get the default constructor of the Animal subclass
+                Constructor<? extends Animal> constructor = animalClass.getConstructor(boolean.class, Field.class, Location.class);
+
+                for (int row = 0; row < field.getDepth(); row++) {
+                    for (int col = 0; col < field.getWidth(); col++) {
+                        if (rand.nextDouble() <= animalClass.getDeclaredConstructor().newInstance().getCreationProbability()) {
+                            Location location = new Location(row, col);
+
+                            // Create a new instance of the specific animal class
+                            Animal newAnimal = constructor.newInstance(true, field, location);
+                            newAnimal.setAge(newAnimal.getRandomNum().nextInt(newAnimal.getMaxAge()));
+
+                            animals.add(newAnimal);
+                            view.setColor(animalClass, newAnimal.getColor());
+                        }
+                    }
                 }
-                else if(rand.nextDouble() <= RABBIT_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Rabbit rabbit = new Rabbit(true, field, location);
-                    animals.add(rabbit);
-                }
-                // else leave the location empty.
-            }
+            } catch (Exception e) {
+            e.printStackTrace(); // Handle reflection errors properly in a real-world scenario
         }
+    }
     }
     
     /**
