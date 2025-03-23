@@ -9,6 +9,7 @@ public class SimulationDriver {
         animalClasses = new ArrayList<Class<? extends Animal>>();
         animalClasses.add(Fox.class);
         animalClasses.add(Rabbit.class);
+        animalClasses.add(SquirrelWithGun.class);
 
         Simulator mySim = new Simulator();
 
